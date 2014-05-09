@@ -5,24 +5,33 @@
 
 <web-app>
 
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
 
-	<!-- SpringGwt remote service servlet -->
-	<servlet>
-		<servlet-name>springGwtRemoteServiceServlet</servlet-name>
-		<servlet-class>org.spring4gwt.server.SpringGwtRemoteServiceServlet</servlet-class>
-	</servlet>
+  <filter>
+    <filter-name>myRequestFilter</filter-name>
+    <filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>myRequestFilter</filter-name>
+    <url-pattern>/GwtSpringHibernate/springGwtServices/*</url-pattern>
+  </filter-mapping>
 
-	<servlet-mapping>
-		<servlet-name>springGwtRemoteServiceServlet</servlet-name>
-		<url-pattern>/GwtSpringHibernate/springGwtServices/*</url-pattern>
-	</servlet-mapping>
+  <!-- SpringGwt remote service servlet -->
+  <servlet>
+    <servlet-name>springGwtRemoteServiceServlet</servlet-name>
+    <servlet-class>org.spring4gwt.server.SpringGwtRemoteServiceServlet</servlet-class>
+  </servlet>
 
-	<!-- Default page to serve -->
-	<welcome-file-list>
-		<welcome-file>GwtSpringHibernate.html</welcome-file>
-	</welcome-file-list>
+  <servlet-mapping>
+    <servlet-name>springGwtRemoteServiceServlet</servlet-name>
+    <url-pattern>/GwtSpringHibernate/springGwtServices/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>GwtSpringHibernate.html</welcome-file>
+  </welcome-file-list>
 
 </web-app>

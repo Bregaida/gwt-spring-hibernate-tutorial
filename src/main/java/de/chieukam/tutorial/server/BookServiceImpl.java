@@ -10,38 +10,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
 import de.chieukam.tutorial.client.BookService;
 import de.chieukam.tutorial.shared.BookDTO;
 import de.chieukam.tutorial.shared.Validator;
 
 @Service("bookService")
-public class BookServiceImpl extends RemoteServiceServlet implements BookService {
-	
-	private static final long serialVersionUID = -6547737229424190373L;
+public class BookServiceImpl implements BookService {
 
 	private static final Log LOG = LogFactory.getLog(BookServiceImpl.class);
 
 	@Autowired
 	private BookDAO bookDAO;
 
+	@Autowired
+	private ShoppingCart cart;
+
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void saveOrUpdate(BookDTO book) throws Exception {
-		
 	    // Verify that the input is valid.
 		if (Validator.isBlank(book.getTitle()) || Validator.isBlank(book.getAutor())) {
 		      // If the input is not valid, throw an IllegalArgumentException back to
 		      // the client.
 		      throw new IllegalArgumentException("Please enter at least the Title and the Autor of the book");
 		}
-		
+
 		try {
 			if (book.getId() == null) {
 				bookDAO.persist(book);
 			} else {
 				bookDAO.merge(book);
 			}
+			cart.addBook(book);
 		} catch (Exception e) {
 			LOG.error(e);
 			throw e;
@@ -65,6 +64,10 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
 		for (BookDTO book : findAll) {
 			result.add(new BookDTO(book));
 		}
+		for (BookDTO book : cart.getBooks()) {
+			System.out.println(book);
+		}
+
 		return result;
 	}
 
