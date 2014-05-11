@@ -11,6 +11,8 @@
 	<context:annotation-config />
 
 	<tx:annotation-driven />
+	
+	<aop:aspectj-autoproxy />
 
 	<context:component-scan base-package="de.chieukam.tutorial" />
 

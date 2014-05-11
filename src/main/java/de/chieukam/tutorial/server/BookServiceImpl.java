@@ -11,19 +11,21 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.chieukam.tutorial.client.BookService;
+import de.chieukam.tutorial.server.concert.Performance;
 import de.chieukam.tutorial.shared.BookDTO;
 import de.chieukam.tutorial.shared.Validator;
 
 @Service("bookService")
 public class BookServiceImpl implements BookService {
 
-	private static final Log LOG = LogFactory.getLog(BookServiceImpl.class);
-
 	@Autowired
 	private BookDAO bookDAO;
 
 	@Autowired
 	private ShoppingCart cart;
+	
+	@Autowired
+	private Performance performance;
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void saveOrUpdate(BookDTO book) throws Exception {
@@ -34,17 +36,14 @@ public class BookServiceImpl implements BookService {
 		      throw new IllegalArgumentException("Please enter at least the Title and the Autor of the book");
 		}
 
-		try {
-			if (book.getId() == null) {
-				bookDAO.persist(book);
-			} else {
-				bookDAO.merge(book);
-			}
-			cart.addBook(book);
-		} catch (Exception e) {
-			LOG.error(e);
-			throw e;
+		performance.perform();
+
+		if (book.getId() == null) {
+		  bookDAO.persist(book);
+		} else {
+		  bookDAO.merge(book);
 		}
+		cart.addBook(book);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
